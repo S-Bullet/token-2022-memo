@@ -81,7 +81,19 @@ async function main() {
     await sendAndConfirmTransaction(connection, transaction, [payer, owner, destinationKeypair], undefined);
 
     // 4 - Mint tokens to source account (owned by the payer)
+    const sourceAccount = await createAssociatedTokenAccountIdempotent(connection, payer, mint, payer.publicKey, {}, TOKEN_2022_PROGRAM_ID);
 
+    await mintTo(
+        connection,
+        payer,
+        mint,
+        sourceAccount,
+        mintAuthority,
+        Number(transferAmount) * 10,
+        [],
+        undefined,
+        TOKEN_2022_PROGRAM_ID
+    );
 
     // 5 - Create a transfer instruction
 
