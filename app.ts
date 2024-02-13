@@ -26,6 +26,9 @@ import {
 } from '@solana/spl-token';
 import { createMemoInstruction } from '@solana/spl-memo';
 
+// Additional imports required
+import { createAccount, createReallocateInstruction } from '@solana/spl-token';
+
 async function main() {
 
     // Initialize connection to local Solana node
@@ -164,6 +167,38 @@ async function main() {
     } else {
         console.log("❌ - Something's wrong. Expected memo to be required.");
     }
+
+     // 11 - Bonus - add memo requirement to an existing account
+/*     try {
+        // Create a new token account without a memo requirement
+        const newOwner = Keypair.generate();
+        const bonusAccount = await createAccount(
+            connection,
+            payer,
+            mint,
+            newOwner.publicKey,
+            undefined,
+            undefined,
+            TOKEN_2022_PROGRAM_ID
+        );
+    
+        const extensions = [ExtensionType.MemoTransfer];
+        const addExtensionTx = new Transaction().add(
+            // Create a reallocate instruction to add lamports for the the memo requirement
+            createReallocateInstruction(
+                bonusAccount,
+                payer.publicKey,
+                extensions,
+                newOwner.publicKey
+            ),
+            // Create an instruction to enable the memo requirement
+            createEnableRequiredMemoTransfersInstruction(bonusAccount, newOwner.publicKey)
+        );
+        await sendAndConfirmTransaction(connection, addExtensionTx, [payer, newOwner]);
+        console.log("✅ - Memo requirement added to existing account.");
+    } catch (e) {
+        console.error("❌ - Something went wrong. Tx failed unexpectedly: ", e);
+    }//*/
 }
 
 async function verifyMemoRequirement(tokenAccount: PublicKey, connection: Connection): Promise<boolean> {
