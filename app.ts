@@ -53,7 +53,16 @@ async function main() {
     await connection.confirmTransaction({ signature: airdropSignature, ...(await connection.getLatestBlockhash()) });
 
     // 2 - Create a mint
-
+const mint = await createMint(
+        connection,
+        payer,
+        mintAuthority.publicKey,
+        mintAuthority.publicKey,
+        decimals,
+        undefined,
+        undefined,
+        TOKEN_2022_PROGRAM_ID
+    );
 
     // 3 - Create a destination account with memo requirement enabled
 
