@@ -108,7 +108,23 @@ async function main() {
     )
 
     // 6 - Try to send a transaction without a memo (should fail)
-
+    try {
+        const failedTx = new Transaction().add(ix);
+        const failedTxSig = await sendAndConfirmTransaction(connection, failedTx, [payer], undefined);
+        console.log("❌ - This should have failed, but didn't. Tx: ", failedTxSig);
+    } catch (e) {
+        if (e instanceof SendTransactionError && e.logs) {
+            const errorMessage = e.logs.join('\n');
+            if (errorMessage.includes("No memo in previous instruction")) {
+                // https://github.com/solana-labs/solana-program-library/blob/d755eae17e0a2220f31bfc69548a78be832643af/token/program-2022/src/error.rs#L143
+                console.log("✅ - Transaction failed without memo (memo is required).");
+            } else {
+                console.error(`❌ - Unexpected error: ${errorMessage}`);
+            }
+        } else {
+            console.error(`❌ - Unknown error: ${e}`);
+        }
+    }
 
     // 7 - Try to send a transaction with a memo (should succeed)
 
