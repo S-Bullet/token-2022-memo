@@ -96,7 +96,16 @@ async function main() {
     );
 
     // 5 - Create a transfer instruction
-
+    const ix = createTransferCheckedInstruction(
+        sourceAccount,
+        mint,
+        destination,
+        payer.publicKey,
+        transferAmount,
+        decimals,
+        undefined,
+        TOKEN_2022_PROGRAM_ID
+    )
 
     // 6 - Try to send a transaction without a memo (should fail)
 
