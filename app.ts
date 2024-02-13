@@ -137,7 +137,7 @@ async function main() {
     }
 
     // 8 - Disable required memo transfers
-
+    await disableRequiredMemoTransfers(connection, payer, destination, owner);
 
     // 9 - Try to send a transaction without a memo (should succeed)
 
