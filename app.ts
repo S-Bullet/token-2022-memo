@@ -140,7 +140,13 @@ async function main() {
     await disableRequiredMemoTransfers(connection, payer, destination, owner);
 
     // 9 - Try to send a transaction without a memo (should succeed)
-
+    try {
+        const noMemoTx = new Transaction().add(ix);
+        await sendAndConfirmTransaction(connection, noMemoTx, [payer], undefined);
+        console.log("✅ - Successful transaction without memo (memo is NOT required).");
+    } catch (e) {
+        console.error("❌ - Something went wrong. Tx failed unexpectedly: ", e);
+    }
 
     // 10 - Verify the memo requirement toggle
 
