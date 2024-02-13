@@ -127,7 +127,14 @@ async function main() {
     }
 
     // 7 - Try to send a transaction with a memo (should succeed)
-
+    try {
+        const memo = createMemoInstruction("QuickNode demo.");
+        const memoTx = new Transaction().add(memo, ix);
+        await sendAndConfirmTransaction(connection, memoTx, [payer], undefined);
+        console.log("✅ - Successful transaction with memo (memo is required).");
+    } catch (e) {
+        console.error("❌ - Something went wrong. Tx failed unexpectedly: ", e);
+    }
 
     // 8 - Disable required memo transfers
 
