@@ -149,9 +149,32 @@ async function main() {
     }
 
     // 10 - Verify the memo requirement toggle
+    let isMemoRequired = await verifyMemoRequirement(destination, connection);
+    if (isMemoRequired) {
+        console.log("❌ - Something's wrong. Expected memo requirement to be disabled.");
+    } else {
+        console.log("✅ - Memo requirement disabled.");
+    }
 
+    await enableRequiredMemoTransfers(connection, payer, destination, owner);
+
+    isMemoRequired = await verifyMemoRequirement(destination, connection);
+    if (isMemoRequired) {
+        console.log("✅ - Memo requirement enabled.");
+    } else {
+        console.log("❌ - Something's wrong. Expected memo to be required.");
+    }
 }
 
+async function verifyMemoRequirement(tokenAccount: PublicKey, connection: Connection): Promise<boolean> {
+    const accountInfo = await connection.getAccountInfo(tokenAccount);
+    const account = unpackAccount(tokenAccount, accountInfo, TOKEN_2022_PROGRAM_ID);
+    const memoDetails = getMemoTransfer(account);
+    if (!memoDetails) {
+        throw new Error("Memo details not found.");
+    }
+    return memoDetails.requireIncomingTransferMemos;
+}
 // Call the main function
 main().then(() => {
     console.log("🎉 - Demo complete.");
