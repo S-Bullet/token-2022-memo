@@ -53,7 +53,7 @@ async function main() {
     await connection.confirmTransaction({ signature: airdropSignature, ...(await connection.getLatestBlockhash()) });
 
     // 2 - Create a mint
-const mint = await createMint(
+    const mint = await createMint(
         connection,
         payer,
         mintAuthority.publicKey,
@@ -65,7 +65,20 @@ const mint = await createMint(
     );
 
     // 3 - Create a destination account with memo requirement enabled
-
+    const accountLen = getAccountLen([ExtensionType.MemoTransfer]);
+    const lamports = await connection.getMinimumBalanceForRentExemption(accountLen);
+    const transaction = new Transaction().add(
+        SystemProgram.createAccount({
+            fromPubkey: payer.publicKey,
+            newAccountPubkey: destination,
+            space: accountLen,
+            lamports,
+            programId: TOKEN_2022_PROGRAM_ID,
+        }),
+        createInitializeAccountInstruction(destination, mint, owner.publicKey, TOKEN_2022_PROGRAM_ID),
+        createEnableRequiredMemoTransfersInstruction(destination, owner.publicKey)
+    );
+    await sendAndConfirmTransaction(connection, transaction, [payer, owner, destinationKeypair], undefined);
 
     // 4 - Mint tokens to source account (owned by the payer)
 
